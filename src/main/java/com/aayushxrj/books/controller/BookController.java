@@ -27,69 +27,34 @@ public class BookController {
         ));
     }
 
-//    @GetMapping("/api/books")
-//    public List<Book> getBooks(){
-//        return books;
-//    }
-
     @GetMapping()
     public List<Book> getBooks(@RequestParam(required = false) String category){
 
         if(category == null) return books;
 
-        List<Book> filteredBooks = new ArrayList<>();
+        return books.stream()
+                .filter(book -> book.getCategory().equalsIgnoreCase(category))
+                .toList();
 
-        for(Book book : books){
-            if(book.getCategory().equalsIgnoreCase(category)){
-                filteredBooks.add(book);
-            }
-        }
-
-//        return books.stream()
-//                .filter(book -> book.getCategory().equalsIgnoreCase(category))
-//                .toList();
-
-        return filteredBooks;
-    }
-
-    @GetMapping("/id/{id}")
-    public Book getBookByIndex(@PathVariable int id){
-        return books.get(id-1);
     }
 
     @GetMapping("/title/{title}")
     public Book getBookByTitle(@PathVariable String title){
-//        for(Book book : books){
-//            if(book.getTitle().equalsIgnoreCase(title)){
-//                return book;
-//            }
-//        }
-//        return null;
+
         return books.stream()
                 .filter(book -> book.getTitle().equalsIgnoreCase(title))
                 .findFirst()
                 .orElse(null);
+
     }
-
-
-//    @GetMapping("/api")
-//    public String firstAPI(){
-//        return "Hello, Aayush!";
-//    }
 
     @PostMapping()
     public void createBook(@RequestBody Book newBook){
-        for(Book book: books){
-            if(book.getTitle().equalsIgnoreCase(newBook.getTitle())){
-                return;
-            }
-        }
-        books.add(newBook);
 
-//        boolean isNewBook = books.
-//                stream()
-//                .noneMatch(book -> book.getTitle().equalsIgnoreCase(newBook.getTitle()));
-//        if(isNewBook) books.add(newBook);
+        boolean isNewBook = books.stream()
+                .noneMatch(book -> book.getTitle().equalsIgnoreCase(newBook.getTitle()));
+        if(isNewBook) books.add(newBook);
+
     }
 
     @PutMapping("/{title}")
