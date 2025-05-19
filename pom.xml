@@ -36,6 +36,7 @@
 		</dependency>
 
 		<!-- New dependencies for Swagger -->
+		<!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui -->
 		<!-- http://localhost:8080/swagger-ui/index.html -->
 		<!-- resources -> applications.properties (updated path) -->
 		<dependency>
