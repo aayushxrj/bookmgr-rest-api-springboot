@@ -93,6 +93,7 @@ public class BookController {
                 return;
             }
         }
+        throw new BookNotFoundException("Book not found - "+id);
     }
 
     @Operation(summary = "Delete a book", description = "Remove a book from the list")
@@ -100,6 +101,12 @@ public class BookController {
     @DeleteMapping("/{id}")
     public void deleteBook(@Parameter(description = "Id of the book to delete")
                                @PathVariable @Min(value=1) long id) {
+
+        books.stream()
+                .filter(book -> book.getId() == id)
+                .findFirst()
+                .orElseThrow(() -> new BookNotFoundException("Book not found - "+ id));
+
         books.removeIf(book -> book.getId() == id);
     }
 
