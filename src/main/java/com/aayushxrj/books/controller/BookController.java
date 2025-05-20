@@ -2,6 +2,8 @@ package com.aayushxrj.books.controller;
 
 import com.aayushxrj.books.entity.Book;
 import com.aayushxrj.books.request.BookRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -40,8 +42,7 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public Book getBookByTitle(@PathVariable long id){
-
+    public Book getBookByTitle(@PathVariable @Min(value=1) long id)  {
         return books.stream()
                 .filter(book -> book.getId() == id)
                 .findFirst()
@@ -49,16 +50,8 @@ public class BookController {
 
     }
 
-//    @PostMapping()
-//    public void createBook(@RequestBody Book newBook){
-//
-//        boolean isNewBook = books.stream()
-//                .noneMatch(book -> book.getTitle().equalsIgnoreCase(newBook.getTitle()));
-//        if(isNewBook) books.add(newBook);
-//
-//    }
     @PostMapping()
-    public void createBook(@RequestBody BookRequest bookRequest){
+    public void createBook(@Valid @RequestBody BookRequest bookRequest){
         long id = books.isEmpty() ? 1 : books.get(books.size() - 1).getId() + 1;
 
         Book newBook = convertToBook(id, bookRequest);
@@ -74,7 +67,7 @@ public class BookController {
     }
 
     @PutMapping("/{id}")
-    public void updateBook(@PathVariable long id, @RequestBody BookRequest bookRequest){
+    public void updateBook(@PathVariable @Min(value=1) long id,@Valid @RequestBody BookRequest bookRequest){
         for (int i = 0; i < books.size(); i++) {
             if (books.get(i).getId() == id) {
                 Book updatedBook = convertToBook(id, bookRequest);
@@ -85,7 +78,7 @@ public class BookController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteBook(@PathVariable long id) {
+    public void deleteBook(@PathVariable @Min(value=1) long id) {
         books.removeIf(book -> book.getId() == id);
     }
 
