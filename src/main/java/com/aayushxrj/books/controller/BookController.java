@@ -1,6 +1,7 @@
 package com.aayushxrj.books.controller;
 
 import com.aayushxrj.books.entity.Book;
+import com.aayushxrj.books.request.BookRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -18,12 +19,12 @@ public class BookController {
 
     private void initialiseBooks(){
         books.addAll(List.of(
-                new Book("Title one", "Author one", "Science"),
-                new Book("Title two", "Author two", "Science"),
-                new Book("Title three", "Author three", "History"),
-                new Book("Title four", "Author four", "Maths"),
-                new Book("Title five", "Author five", "Maths"),
-                new Book("Title six", "Author six", "Maths")
+                new Book(1, "Computer Science Pro", "Chad Darby", "Computer Science", 5),
+                new Book(2, "Java Spring Master", "Eric Roby", "Computer Science", 5),
+                new Book(3, "Why 1+1 Rocks", "Adil A.", "Math", 5),
+                new Book(4, "How Bears Hibernate", "Bob B.", "Science", 2),
+                new Book(5, "A Pirate's Treasure", "Curt C.", "History", 3),
+                new Book(6, "Why 2+2 is Better", "Dan D.", "Math", 1)
         ));
     }
 
@@ -38,38 +39,54 @@ public class BookController {
 
     }
 
-    @GetMapping("/title/{title}")
-    public Book getBookByTitle(@PathVariable String title){
+    @GetMapping("/{id}")
+    public Book getBookByTitle(@PathVariable long id){
 
         return books.stream()
-                .filter(book -> book.getTitle().equalsIgnoreCase(title))
+                .filter(book -> book.getId() == id)
                 .findFirst()
                 .orElse(null);
 
     }
 
+//    @PostMapping()
+//    public void createBook(@RequestBody Book newBook){
+//
+//        boolean isNewBook = books.stream()
+//                .noneMatch(book -> book.getTitle().equalsIgnoreCase(newBook.getTitle()));
+//        if(isNewBook) books.add(newBook);
+//
+//    }
     @PostMapping()
-    public void createBook(@RequestBody Book newBook){
+    public void createBook(@RequestBody BookRequest bookRequest){
+        long id = books.isEmpty() ? 1 : books.get(books.size() - 1).getId() + 1;
 
-        boolean isNewBook = books.stream()
-                .noneMatch(book -> book.getTitle().equalsIgnoreCase(newBook.getTitle()));
-        if(isNewBook) books.add(newBook);
-
+        Book newBook = convertToBook(id, bookRequest);
+        books.add(newBook);
     }
 
-    @PutMapping("/{title}")
-    public void updateBook(@PathVariable String title, @RequestBody Book updatedBook){
+    private Book convertToBook(long id, BookRequest bookRequest){
+        return new Book(id,
+                bookRequest.getTitle(),
+                bookRequest.getAuthor(),
+                bookRequest.getCategory(),
+                bookRequest.getRating());
+    }
+
+    @PutMapping("/{id}")
+    public void updateBook(@PathVariable long id, @RequestBody BookRequest bookRequest){
         for (int i = 0; i < books.size(); i++) {
-            if (books.get(i).getTitle().equalsIgnoreCase(title)) {
+            if (books.get(i).getId() == id) {
+                Book updatedBook = convertToBook(id, bookRequest);
                 books.set(i, updatedBook);
                 return;
             }
         }
     }
 
-    @DeleteMapping("/{title}")
-    public void deleteBook(@PathVariable String title) {
-        books.removeIf(book -> book.getTitle().equalsIgnoreCase(title));
+    @DeleteMapping("/{id}")
+    public void deleteBook(@PathVariable long id) {
+        books.removeIf(book -> book.getId() == id);
     }
 
 }
